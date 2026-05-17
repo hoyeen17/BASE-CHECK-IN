@@ -138,6 +138,10 @@
     .btn-primary:hover { background: #003fd6; transform: translateY(-1px); }
     .btn-primary:disabled { background: #333; color: var(--muted); cursor: not-allowed; transform: none; }
 
+    .btn-success { background: var(--success); color: #000; }
+    .btn-success:hover { background: #00a87e; transform: translateY(-1px); }
+    .btn-success:disabled { background: #333; color: var(--muted); cursor: not-allowed; transform: none; }
+
     .spinner {
       width: 32px;
       height: 32px;
@@ -156,6 +160,8 @@
 
     #loading { display: none; text-align: center; padding: 20px; }
     #result { display: none; }
+    #checkin-section { display: none; }
+
     #error-box {
       display: none;
       background: rgba(255,68,68,0.1);
@@ -192,7 +198,13 @@
       margin: 12px 0;
     }
 
-    .tx-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tx-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
     .btn-row { display: flex; gap: 8px; margin-top: 12px; }
 
@@ -228,6 +240,20 @@
 
     .info-box strong { color: var(--accent-light); }
 
+    .wallet-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--success);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .step-log {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -238,6 +264,7 @@
       color: var(--muted);
       margin-top: 12px;
       min-height: 60px;
+      display: none;
     }
 
     .log-line { margin-bottom: 4px; }
@@ -262,14 +289,22 @@
 
   <div id="error-box"></div>
 
-  <div class="card">
-    <div class="card-title">Your details</div>
-    <label>Your wallet address (EOA)</label>
-    <input type="text" id="wallet" placeholder="0x..." />
+  <!-- Step 1: Connect Wallet -->
+  <div class="card" id="connect-section">
+    <div class="card-title">Step 1 — Connect your wallet</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Connect MetaMask to get started. No ETH needed.</p>
+    <button class="btn btn-primary" id="connect-btn" onclick="connectWallet()">🦊 Connect MetaMask</button>
+  </div>
+
+  <!-- Step 2: Check In -->
+  <div class="card" id="checkin-section">
+    <div class="card-title">Step 2 — Check In</div>
+    <label>Connected wallet</label>
+    <div class="wallet-badge" id="wallet-badge">✅ <span id="wallet-display">—</span></div>
     <label>Pimlico API Key</label>
     <input type="text" id="pimlico-key" placeholder="pim_..." />
-    <button class="btn btn-primary" id="checkin-btn" onclick="doCheckin()">⬡ Check In on Base</button>
-    <div class="step-log" id="step-log" style="display:none;"></div>
+    <button class="btn btn-success" id="checkin-btn" onclick="doCheckin()">⬡ Check In on Base</button>
+    <div class="step-log" id="step-log"></div>
   </div>
 
   <div id="loading">
@@ -283,12 +318,11 @@
       <div class="success-title">You're checked in onchain!</div>
       <div class="success-sub">Your gasless transaction was submitted to Base Sepolia successfully.</div>
     </div>
-
     <div class="card">
-      <div class="tx-label">Transaction Hash</div>
+      <div class="tx-label">User Operation Hash</div>
       <div class="tx-box" id="tx-hash">—</div>
       <div class="btn-row">
-        <button class="btn-secondary" onclick="viewOnBasescan()">🔍 View on Basescan</button>
+        <button class="btn-secondary" onclick="viewOnJiffyscan()">🔍 View on JiffyScan</button>
         <button class="btn-secondary" onclick="tweetIt()">🐦 Tweet it</button>
       </div>
     </div>
@@ -296,11 +330,189 @@
 
 </div>
 
-<script type="module">
-  import { createPublicClient, http, encodeFunctionData, parseAbi } from 'https://esm.sh/viem@2';
-  import { baseSepolia } from 'https://esm.sh/viem@2/chains';
+<script>
+  let connectedWallet = '';
 
-  let lastTxHash = '';
+  async function connectWallet() {
+    if (typeof window.ethereum === 'undefined') {
+      showError('MetaMask not found. Please install MetaMask from metamask.io and refresh the page.');
+      return;
+    }
+
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      connectedWallet = accounts[0];
+
+      // Switch to Base Sepolia
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x14a34' }]
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x14a34',
+              chainName: 'Base Sepolia',
+              nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+              rpcUrls: ['https://sepolia.base.org'],
+              blockExplorerUrls: ['https://sepolia.basescan.org']
+            }]
+          });
+        }
+      }
+
+      document.getElementById('wallet-display').textContent =
+        connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
+      document.getElementById('connect-section').style.display = 'none';
+      document.getElementById('checkin-section').style.display = 'block';
+
+    } catch (e) {
+      showError('Could not connect wallet: ' + e.message);
+    }
+  }
+
+  async function doCheckin() {
+    const pimlicoKey = document.getElementById('pimlico-key').value.trim();
+
+    document.getElementById('error-box').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    clearLog();
+
+    if (!pimlicoKey) {
+      showError('Please enter your Pimlico API key.');
+      return;
+    }
+
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('checkin-btn').disabled = true;
+
+    try {
+      const pimlicoUrl = `https://api.pimlico.io/v2/base-sepolia/rpc?apikey=${pimlicoKey}`;
+      const ENTRY_POINT = '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789';
+
+      log('Connecting to Base Sepolia...');
+
+      // Step 1: Get nonce from EntryPoint
+      log('Fetching account nonce...');
+      const nonceRes = await fetch('https://sepolia.base.org', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 1,
+          method: 'eth_call',
+          params: [{
+            to: ENTRY_POINT,
+            data: '0x35567e26' + connectedWallet.slice(2).padStart(64, '0') + '0'.padStart(64, '0')
+          }, 'latest']
+        })
+      });
+      const nonceData = await nonceRes.json();
+      const nonce = nonceData.result || '0x0';
+      log('Nonce fetched ✓', 'success');
+
+      // Step 2: Get gas prices
+      log('Fetching gas prices...');
+      const gasPriceRes = await fetch(pimlicoUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 2,
+          method: 'pimlico_getUserOperationGasPrice',
+          params: []
+        })
+      });
+      const gasPriceData = await gasPriceRes.json();
+      if (gasPriceData.error) throw new Error('Gas price error: ' + gasPriceData.error.message);
+      const maxFeePerGas = gasPriceData.result?.fast?.maxFeePerGas || '0x77359400';
+      const maxPriorityFeePerGas = gasPriceData.result?.fast?.maxPriorityFeePerGas || '0x77359400';
+      log('Gas prices fetched ✓', 'success');
+
+      // Step 3: Build UserOperation
+      const userOp = {
+        sender: connectedWallet,
+        nonce,
+        initCode: '0x',
+        callData: '0x',
+        callGasLimit: '0x88B8',
+        verificationGasLimit: '0x33450',
+        preVerificationGas: '0xC350',
+        maxFeePerGas,
+        maxPriorityFeePerGas,
+        paymasterAndData: '0x',
+        signature: '0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c'
+      };
+
+      // Step 4: Request paymaster sponsorship
+      log('Requesting paymaster sponsorship...');
+      const pmRes = await fetch(pimlicoUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 3,
+          method: 'pm_sponsorUserOperation',
+          params: [userOp, ENTRY_POINT]
+        })
+      });
+      const pmData = await pmRes.json();
+      if (pmData.error) throw new Error('Paymaster error: ' + pmData.error.message);
+      log('Transaction sponsored ✓', 'success');
+
+      // Step 5: Update userOp with paymaster data
+      userOp.paymasterAndData = pmData.result?.paymasterAndData || '0x';
+      if (pmData.result?.callGasLimit) userOp.callGasLimit = pmData.result.callGasLimit;
+      if (pmData.result?.verificationGasLimit) userOp.verificationGasLimit = pmData.result.verificationGasLimit;
+      if (pmData.result?.preVerificationGas) userOp.preVerificationGas = pmData.result.preVerificationGas;
+
+      // Step 6: Sign with MetaMask
+      log('Requesting signature from MetaMask...');
+      const message = 'Base Check-In: ' + new Date().toISOString();
+      const signature = await window.ethereum.request({
+        method: 'personal_sign',
+        params: [message, connectedWallet]
+      });
+      userOp.signature = signature;
+      log('Signed ✓', 'success');
+
+      // Step 7: Send UserOperation
+      log('Sending to Base Sepolia...');
+      const sendRes = await fetch(pimlicoUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 4,
+          method: 'eth_sendUserOperation',
+          params: [userOp, ENTRY_POINT]
+        })
+      });
+      const sendData = await sendRes.json();
+      if (sendData.error) throw new Error(sendData.error.message);
+
+      const txHash = sendData.result;
+      log('Transaction sent ✓', 'success');
+
+      document.getElementById('tx-hash').textContent = txHash;
+      document.getElementById('result').style.display = 'block';
+
+    } catch (e) {
+      showError('Check-in failed: ' + e.message);
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('checkin-btn').disabled = false;
+  }
+
+  window.viewOnJiffyscan = function() {
+    const hash = document.getElementById('tx-hash').textContent;
+    if (hash) window.open('https://jiffyscan.xyz/userOpHash/' + hash + '?network=base-sepolia', '_blank');
+  }
+
+  window.tweetIt = function() {
+    const text = `Just did a gasless onchain check-in on Base! 🔵⬡\n\nNo ETH needed — gas sponsored by @pimlicoHQ.\n\nBuilding in public one commit at a time.\n\n#Base #BuildOnBase #onchain #Web3 #gasless`;
+    window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
+  }
 
   function log(msg, type = '') {
     const logEl = document.getElementById('step-log');
@@ -315,141 +527,6 @@
     const logEl = document.getElementById('step-log');
     logEl.innerHTML = '';
     logEl.style.display = 'none';
-  }
-
-  window.doCheckin = async function() {
-    const wallet = document.getElementById('wallet').value.trim();
-    const pimlicoKey = document.getElementById('pimlico-key').value.trim();
-
-    document.getElementById('error-box').style.display = 'none';
-    document.getElementById('result').style.display = 'none';
-    clearLog();
-
-    if (!wallet || !wallet.startsWith('0x') || wallet.length !== 42) {
-      showError('Please enter a valid wallet address (starts with 0x, 42 characters).');
-      return;
-    }
-    if (!pimlicoKey) {
-      showError('Please enter your Pimlico API key.');
-      return;
-    }
-
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('checkin-btn').disabled = true;
-
-    try {
-      const pimlicoUrl = `https://api.pimlico.io/v2/base-sepolia/rpc?apikey=${pimlicoKey}`;
-
-      log('Connecting to Base Sepolia...');
-
-      // Step 1: Get gas prices from Pimlico
-      log('Fetching gas prices...');
-      const gasPriceRes = await fetch(pimlicoUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', id: 1,
-          method: 'pimlico_getUserOperationGasPrice',
-          params: []
-        })
-      });
-      const gasPriceData = await gasPriceRes.json();
-      if (gasPriceData.error) throw new Error('Gas price error: ' + gasPriceData.error.message);
-
-      const maxFeePerGas = gasPriceData.result?.fast?.maxFeePerGas || '0x77359400';
-      const maxPriorityFeePerGas = gasPriceData.result?.fast?.maxPriorityFeePerGas || '0x77359400';
-
-      log('Gas prices fetched ✓', 'success');
-
-      // Step 2: Use SimpleAccount factory to compute smart account address
-      const FACTORY = '0x9406Cc6185a346906296840746125a0E449764545';
-      const ENTRY_POINT = '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789';
-
-      // Encode createAccount(owner, salt)
-      const factoryData = '0x5fbfb9cf' +
-        wallet.slice(2).padStart(64, '0') +
-        '0'.padStart(64, '0');
-
-      log('Computing smart account address...');
-
-      // Step 3: Build UserOperation
-      const userOp = {
-        sender: wallet,
-        nonce: '0x0',
-        initCode: '0x',
-        callData: '0x',
-        callGasLimit: '0x88B8',
-        verificationGasLimit: '0x33450',
-        preVerificationGas: '0xC350',
-        maxFeePerGas,
-        maxPriorityFeePerGas,
-        paymasterAndData: '0x',
-        signature: '0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c'
-      };
-
-      log('Requesting paymaster sponsorship...');
-
-      // Step 4: Get paymaster data from Pimlico
-      const pmRes = await fetch(pimlicoUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', id: 2,
-          method: 'pm_sponsorUserOperation',
-          params: [userOp, ENTRY_POINT]
-        })
-      });
-
-      const pmData = await pmRes.json();
-      if (pmData.error) throw new Error('Paymaster error: ' + pmData.error.message);
-
-      log('Transaction sponsored by Pimlico ✓', 'success');
-
-      // Step 5: Update userOp with paymaster data
-      userOp.paymasterAndData = pmData.result?.paymasterAndData || '0x';
-      if (pmData.result?.callGasLimit) userOp.callGasLimit = pmData.result.callGasLimit;
-      if (pmData.result?.verificationGasLimit) userOp.verificationGasLimit = pmData.result.verificationGasLimit;
-      if (pmData.result?.preVerificationGas) userOp.preVerificationGas = pmData.result.preVerificationGas;
-
-      log('Sending transaction to Base Sepolia...');
-
-      // Step 6: Send UserOperation
-      const sendRes = await fetch(pimlicoUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', id: 3,
-          method: 'eth_sendUserOperation',
-          params: [userOp, ENTRY_POINT]
-        })
-      });
-
-      const sendData = await sendRes.json();
-      if (sendData.error) throw new Error(sendData.error.message);
-
-      lastTxHash = sendData.result;
-      log('Transaction sent ✓ Hash: ' + lastTxHash.slice(0, 20) + '...', 'success');
-
-      document.getElementById('tx-hash').textContent = lastTxHash;
-      document.getElementById('result').style.display = 'block';
-
-    } catch (e) {
-      showError('Check-in failed: ' + e.message);
-    }
-
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('checkin-btn').disabled = false;
-  }
-
-  window.viewOnBasescan = function() {
-    if (lastTxHash) {
-      window.open('https://sepolia.basescan.org/tx/' + lastTxHash, '_blank');
-    }
-  }
-
-  window.tweetIt = function() {
-    const text = `Just did a gasless onchain check-in on Base! 🔵⬡ No ETH needed — transaction sponsored via @pimlicoHQ. Building in public. #Base #onchain #Web3 #gasless`;
-    window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
   }
 
   function showError(msg) {

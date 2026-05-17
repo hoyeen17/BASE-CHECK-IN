@@ -93,31 +93,6 @@
       margin-bottom: 12px;
     }
 
-    label {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      font-size: 14px;
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 12px;
-    }
-
-    input[type="text"]:focus { border-color: var(--accent); }
-    input[type="text"]::placeholder { color: var(--muted); font-size: 13px; }
-
     .btn {
       display: inline-flex;
       align-items: center;
@@ -138,73 +113,8 @@
     .btn-primary:hover { background: #003fd6; transform: translateY(-1px); }
     .btn-primary:disabled { background: #333; color: var(--muted); cursor: not-allowed; transform: none; }
 
-    .btn-success { background: var(--success); color: #000; }
+    .btn-success { background: var(--success); color: #000; font-weight: 700; }
     .btn-success:hover { background: #00a87e; transform: translateY(-1px); }
-    .btn-success:disabled { background: #333; color: var(--muted); cursor: not-allowed; transform: none; }
-
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid rgba(0,82,255,0.2);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 10px;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    #loading { display: none; text-align: center; padding: 20px; }
-    #result { display: none; }
-    #checkin-section { display: none; }
-
-    #error-box {
-      display: none;
-      background: rgba(255,68,68,0.1);
-      border: 1px solid rgba(255,68,68,0.3);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      font-size: 13px;
-      color: var(--danger);
-      margin-bottom: 1rem;
-    }
-
-    .success-banner {
-      background: rgba(0,200,150,0.1);
-      border: 1px solid rgba(0,200,150,0.3);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .success-icon { font-size: 36px; margin-bottom: 8px; }
-    .success-title { font-size: 18px; font-weight: 700; color: var(--success); margin-bottom: 4px; }
-    .success-sub { font-size: 13px; color: var(--muted); }
-
-    .tx-box {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      color: var(--muted);
-      word-break: break-all;
-      margin: 12px 0;
-    }
-
-    .tx-label {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
 
     .btn-row { display: flex; gap: 8px; margin-top: 12px; }
 
@@ -228,6 +138,39 @@
 
     .btn-secondary:hover { border-color: var(--border2); background: #222; }
 
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #error-box {
+      display: none;
+      background: rgba(255,68,68,0.1);
+      border: 1px solid rgba(255,68,68,0.3);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 13px;
+      color: var(--danger);
+      margin-bottom: 1rem;
+    }
+
+    #checkin-section { display: none; }
+    #result { display: none; }
+
+    .wallet-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--success);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .info-box {
       background: rgba(0,82,255,0.08);
       border: 1px solid rgba(0,82,255,0.2);
@@ -240,36 +183,104 @@
 
     .info-box strong { color: var(--accent-light); }
 
-    .wallet-badge {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      font-family: 'DM Mono', monospace;
+    /* Proof Card */
+    .proof-card {
+      background: linear-gradient(135deg, #0a0a0a 0%, #0d1a3a 100%);
+      border: 1px solid rgba(0,82,255,0.4);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .proof-card::before {
+      content: '⬡';
+      position: absolute;
+      top: -20px;
+      right: -10px;
+      font-size: 120px;
+      opacity: 0.05;
+      color: var(--accent);
+    }
+
+    .proof-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,200,150,0.15);
+      border: 1px solid rgba(0,200,150,0.3);
+      border-radius: 20px;
+      padding: 4px 12px;
       font-size: 12px;
       color: var(--success);
-      margin-bottom: 12px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .proof-wallet {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      color: var(--accent-light);
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+
+    .proof-date {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .proof-sig {
+      background: rgba(0,0,0,0.4);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      word-break: break-all;
+      margin-bottom: 8px;
+    }
+
+    .proof-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .proof-network {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .step-log {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      font-family: 'DM Mono', monospace;
+      gap: 6px;
       font-size: 12px;
-      color: var(--muted);
-      margin-top: 12px;
-      min-height: 60px;
-      display: none;
+      color: var(--accent-light);
+      font-weight: 600;
     }
 
-    .log-line { margin-bottom: 4px; }
-    .log-line.success { color: var(--success); }
-    .log-line.error { color: var(--danger); }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid rgba(0,82,255,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #loading {
+      display: none;
+      text-align: center;
+      padding: 16px;
+      font-size: 14px;
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -280,51 +291,54 @@
       <div class="logo-icon">⬡</div>
       <h1>Base Check-In</h1>
     </div>
-    <p class="subtitle">Do a free onchain check-in on Base — no ETH needed. Gas is on us.</p>
+    <p class="subtitle">Sign & prove your onchain presence on Base. Free, instant, verifiable.</p>
   </div>
 
   <div class="info-box">
-    ⚡ <strong>Gasless:</strong> This transaction is sponsored by Pimlico. You don't need any ETH in your wallet to check in.
+    ⬡ <strong>How it works:</strong> Connect your wallet, sign a message, and get a verifiable proof card showing you were here on Base. Share it on X to flex your onchain identity.
   </div>
 
   <div id="error-box"></div>
 
-  <!-- Step 1: Connect Wallet -->
+  <!-- Step 1: Connect -->
   <div class="card" id="connect-section">
     <div class="card-title">Step 1 — Connect your wallet</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Connect MetaMask to get started. No ETH needed.</p>
-    <button class="btn btn-primary" id="connect-btn" onclick="connectWallet()">🦊 Connect MetaMask</button>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Works with MetaMask, OKX Wallet, and any Web3 wallet in your browser.</p>
+    <button class="btn btn-primary" id="connect-btn" onclick="connectWallet()">🔌 Connect Wallet</button>
   </div>
 
-  <!-- Step 2: Check In -->
+  <!-- Step 2: Sign -->
   <div class="card" id="checkin-section">
-    <div class="card-title">Step 2 — Check In</div>
-    <label>Connected wallet</label>
-    <div class="wallet-badge" id="wallet-badge">✅ <span id="wallet-display">—</span></div>
-    <label>Pimlico API Key</label>
-    <input type="text" id="pimlico-key" placeholder="pim_..." />
-    <button class="btn btn-success" id="checkin-btn" onclick="doCheckin()">⬡ Check In on Base</button>
-    <div class="step-log" id="step-log"></div>
+    <div class="card-title">Step 2 — Sign your check-in</div>
+    <div class="wallet-badge">✅ <span id="wallet-display">—</span></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Click below to sign a message with your wallet. This proves your onchain identity — no ETH needed.</p>
+    <button class="btn btn-success" id="checkin-btn" onclick="doCheckin()">✍️ Sign & Check In</button>
   </div>
 
   <div id="loading">
-    <div class="spinner"></div>
-    <p style="color:var(--muted);font-size:13px;">Submitting your gasless check-in on Base...</p>
+    <div class="spinner"></div> Waiting for signature...
   </div>
 
+  <!-- Result: Proof Card -->
   <div id="result">
-    <div class="success-banner">
-      <div class="success-icon">✅</div>
-      <div class="success-title">You're checked in onchain!</div>
-      <div class="success-sub">Your gasless transaction was submitted to Base Sepolia successfully.</div>
+    <div class="proof-card">
+      <div class="proof-badge">✅ Verified Onchain</div>
+      <div class="proof-label">Wallet Address</div>
+      <div class="proof-wallet" id="proof-wallet">—</div>
+      <div class="proof-label">Checked in at</div>
+      <div class="proof-date" id="proof-date">—</div>
+      <div class="proof-label">Signature</div>
+      <div class="proof-sig" id="proof-sig">—</div>
+      <div class="proof-network">⬡ Base Network · Signed & Verified</div>
     </div>
-    <div class="card">
-      <div class="tx-label">User Operation Hash</div>
-      <div class="tx-box" id="tx-hash">—</div>
-      <div class="btn-row">
-        <button class="btn-secondary" onclick="viewOnJiffyscan()">🔍 View on JiffyScan</button>
-        <button class="btn-secondary" onclick="tweetIt()">🐦 Tweet it</button>
-      </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="copySig()">📋 Copy Signature</button>
+      <button class="btn-secondary" onclick="tweetIt()">🐦 Tweet Proof</button>
+    </div>
+
+    <div style="margin-top:12px;">
+      <button class="btn btn-primary" onclick="resetApp()">🔄 Check In Again</button>
     </div>
   </div>
 
@@ -332,35 +346,45 @@
 
 <script>
   let connectedWallet = '';
+  let checkInSignature = '';
 
   async function connectWallet() {
-    if (typeof window.ethereum === 'undefined') {
-      showError('MetaMask not found. Please install MetaMask from metamask.io and refresh the page.');
+    const provider = window.ethereum;
+
+    if (!provider) {
+      showError('No Web3 wallet found. Please install MetaMask or OKX Wallet and refresh.');
       return;
     }
 
     try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      document.getElementById('connect-btn').disabled = true;
+      document.getElementById('connect-btn').textContent = 'Connecting...';
+
+      const accounts = await provider.request({ method: 'eth_requestAccounts' });
       connectedWallet = accounts[0];
 
-      // Switch to Base Sepolia
+      // Try to switch to Base Sepolia silently
       try {
-        await window.ethereum.request({
+        await provider.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: '0x14a34' }]
         });
-      } catch (switchError) {
-        if (switchError.code === 4902) {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: '0x14a34',
-              chainName: 'Base Sepolia',
-              nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-              rpcUrls: ['https://sepolia.base.org'],
-              blockExplorerUrls: ['https://sepolia.basescan.org']
-            }]
-          });
+      } catch (e) {
+        if (e.code === 4902) {
+          try {
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x14a34',
+                chainName: 'Base Sepolia',
+                nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                rpcUrls: ['https://sepolia.base.org'],
+                blockExplorerUrls: ['https://sepolia.basescan.org']
+              }]
+            });
+          } catch (addErr) {
+            // Continue even if network switch fails
+          }
         }
       }
 
@@ -370,163 +394,72 @@
       document.getElementById('checkin-section').style.display = 'block';
 
     } catch (e) {
-      showError('Could not connect wallet: ' + e.message);
+      showError('Could not connect: ' + (e.message || 'User rejected'));
+      document.getElementById('connect-btn').disabled = false;
+      document.getElementById('connect-btn').textContent = '🔌 Connect Wallet';
     }
   }
 
   async function doCheckin() {
-    const pimlicoKey = document.getElementById('pimlico-key').value.trim();
-
     document.getElementById('error-box').style.display = 'none';
-    document.getElementById('result').style.display = 'none';
-    clearLog();
-
-    if (!pimlicoKey) {
-      showError('Please enter your Pimlico API key.');
-      return;
-    }
-
-    document.getElementById('loading').style.display = 'block';
     document.getElementById('checkin-btn').disabled = true;
+    document.getElementById('loading').style.display = 'block';
 
     try {
-      const pimlicoUrl = `https://api.pimlico.io/v2/base-sepolia/rpc?apikey=${pimlicoKey}`;
-      const ENTRY_POINT = '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789';
+      const now = new Date();
+      const message = [
+        '⬡ Base Check-In',
+        '',
+        'I am proving my onchain presence on Base.',
+        '',
+        'Wallet: ' + connectedWallet,
+        'Date: ' + now.toUTCString(),
+        'Network: Base Sepolia',
+        '',
+        'This signature is my proof of identity.'
+      ].join('\n');
 
-      log('Connecting to Base Sepolia...');
-
-      // Step 1: Get nonce from EntryPoint
-      log('Fetching account nonce...');
-      const nonceRes = await fetch('https://sepolia.base.org', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', id: 1,
-          method: 'eth_call',
-          params: [{
-            to: ENTRY_POINT,
-            data: '0x35567e26' + connectedWallet.slice(2).padStart(64, '0') + '0'.padStart(64, '0')
-          }, 'latest']
-        })
-      });
-      const nonceData = await nonceRes.json();
-      const nonce = nonceData.result || '0x0';
-      log('Nonce fetched ✓', 'success');
-
-      // Step 2: Get gas prices
-      log('Fetching gas prices...');
-      const gasPriceRes = await fetch(pimlicoUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', id: 2,
-          method: 'pimlico_getUserOperationGasPrice',
-          params: []
-        })
-      });
-      const gasPriceData = await gasPriceRes.json();
-      if (gasPriceData.error) throw new Error('Gas price error: ' + gasPriceData.error.message);
-      const maxFeePerGas = gasPriceData.result?.fast?.maxFeePerGas || '0x77359400';
-      const maxPriorityFeePerGas = gasPriceData.result?.fast?.maxPriorityFeePerGas || '0x77359400';
-      log('Gas prices fetched ✓', 'success');
-
-      // Step 3: Build UserOperation
-      const userOp = {
-        sender: connectedWallet,
-        nonce,
-        initCode: '0x',
-        callData: '0x',
-        callGasLimit: '0x88B8',
-        verificationGasLimit: '0x33450',
-        preVerificationGas: '0xC350',
-        maxFeePerGas,
-        maxPriorityFeePerGas,
-        paymasterAndData: '0x',
-        signature: '0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c'
-      };
-
-      // Step 4: Request paymaster sponsorship
-      log('Requesting paymaster sponsorship...');
-      const pmRes = await fetch(pimlicoUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', id: 3,
-          method: 'pm_sponsorUserOperation',
-          params: [userOp, ENTRY_POINT]
-        })
-      });
-      const pmData = await pmRes.json();
-      if (pmData.error) throw new Error('Paymaster error: ' + pmData.error.message);
-      log('Transaction sponsored ✓', 'success');
-
-      // Step 5: Update userOp with paymaster data
-      userOp.paymasterAndData = pmData.result?.paymasterAndData || '0x';
-      if (pmData.result?.callGasLimit) userOp.callGasLimit = pmData.result.callGasLimit;
-      if (pmData.result?.verificationGasLimit) userOp.verificationGasLimit = pmData.result.verificationGasLimit;
-      if (pmData.result?.preVerificationGas) userOp.preVerificationGas = pmData.result.preVerificationGas;
-
-      // Step 6: Sign with MetaMask
-      log('Requesting signature from MetaMask...');
-      const message = 'Base Check-In: ' + new Date().toISOString();
       const signature = await window.ethereum.request({
         method: 'personal_sign',
         params: [message, connectedWallet]
       });
-      userOp.signature = signature;
-      log('Signed ✓', 'success');
 
-      // Step 7: Send UserOperation
-      log('Sending to Base Sepolia...');
-      const sendRes = await fetch(pimlicoUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0', id: 4,
-          method: 'eth_sendUserOperation',
-          params: [userOp, ENTRY_POINT]
-        })
-      });
-      const sendData = await sendRes.json();
-      if (sendData.error) throw new Error(sendData.error.message);
+      checkInSignature = signature;
 
-      const txHash = sendData.result;
-      log('Transaction sent ✓', 'success');
+      document.getElementById('proof-wallet').textContent = connectedWallet;
+      document.getElementById('proof-date').textContent = now.toUTCString();
+      document.getElementById('proof-sig').textContent = signature.slice(0, 80) + '...';
 
-      document.getElementById('tx-hash').textContent = txHash;
+      document.getElementById('checkin-section').style.display = 'none';
       document.getElementById('result').style.display = 'block';
 
     } catch (e) {
-      showError('Check-in failed: ' + e.message);
+      showError('Signing failed: ' + (e.message || 'User rejected the signature'));
+      document.getElementById('checkin-btn').disabled = false;
     }
 
     document.getElementById('loading').style.display = 'none';
-    document.getElementById('checkin-btn').disabled = false;
   }
 
-  window.viewOnJiffyscan = function() {
-    const hash = document.getElementById('tx-hash').textContent;
-    if (hash) window.open('https://jiffyscan.xyz/userOpHash/' + hash + '?network=base-sepolia', '_blank');
+  function copySig() {
+    navigator.clipboard.writeText(checkInSignature).then(() => {
+      const btn = event.target;
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy Signature', 2000);
+    });
   }
 
-  window.tweetIt = function() {
-    const text = `Just did a gasless onchain check-in on Base! 🔵⬡\n\nNo ETH needed — gas sponsored by @pimlicoHQ.\n\nBuilding in public one commit at a time.\n\n#Base #BuildOnBase #onchain #Web3 #gasless`;
+  function tweetIt() {
+    const short = connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
+    const text = `Just checked in onchain on Base! ⬡\n\nWallet: ${short}\nSigned & verified on Base Sepolia.\n\nBuilding in public with Base Check-In 🔵\n\n#Base #BuildOnBase #onchain #Web3`;
     window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
   }
 
-  function log(msg, type = '') {
-    const logEl = document.getElementById('step-log');
-    logEl.style.display = 'block';
-    const line = document.createElement('div');
-    line.className = 'log-line ' + type;
-    line.textContent = '> ' + msg;
-    logEl.appendChild(line);
-  }
-
-  function clearLog() {
-    const logEl = document.getElementById('step-log');
-    logEl.innerHTML = '';
-    logEl.style.display = 'none';
+  function resetApp() {
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('checkin-section').style.display = 'block';
+    document.getElementById('checkin-btn').disabled = false;
+    checkInSignature = '';
   }
 
   function showError(msg) {
